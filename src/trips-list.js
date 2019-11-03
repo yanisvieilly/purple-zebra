@@ -1,8 +1,8 @@
-import React from "react";
+import React, { memo } from "react";
 
 import "./trips-list.css";
 
-const TripsList = ({ trips }) => {
+const TripsList = memo(({ trips }) => {
   const formatRows = (trips || []).map(trip => (
     <tr key={trip.permanent_id}>
       <td>{trip.departure_place.city_name}</td>
@@ -37,6 +37,6 @@ const TripsList = ({ trips }) => {
       </div>
     </div>
   );
-};
+});
 
 export default TripsList;
