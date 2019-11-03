@@ -12,7 +12,7 @@ const TripsList = memo(({ trips }) => {
         <img
           className="user-picture"
           src={trip.user.picture}
-          alt="Driver picture"
+          alt="Driver"
         />
       </td>
       <td>{trip.price.string_value}</td>
