@@ -1,7 +1,7 @@
 import axios from "axios";
 
-export const authenticate = async () => {
-  const { data } = await axios.post(
+const getToken = async () =>
+  axios.post(
     "https://edge.blablacar.com/token",
     {
       grant_type: "client_credentials",
@@ -16,10 +16,27 @@ export const authenticate = async () => {
     }
   );
 
+const setUpRequestInterceptor = async () => {
+  const { data } = await getToken();
+
   axios.interceptors.request.use(config => {
     config.headers.Authorization = `Bearer ${data.access_token}`;
     return config;
   });
+};
 
-  return data;
+export const authenticate = () => {
+  setUpRequestInterceptor();
+
+  axios.interceptors.response.use(
+    response => response,
+    error => {
+      if (error.response && error.response.status === 401) {
+        setUpRequestInterceptor();
+        return;
+      }
+
+      return Promise.reject(error);
+    }
+  );
 };
