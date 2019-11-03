@@ -2,25 +2,29 @@ import React, { useState } from "react";
 import axios from "axios";
 
 import SearchForm from "./search-form";
-
-const fetchTrips = (fromCity, toCity) => {
-  axios.get(
-    `https://edge.blablacar.com/api/v2/trips?_format=json&locale=fr_FR&cur=EUR&fn=${fromCity}&tn=${toCity}`,
-    {
-      headers: {
-        Accept: "application/json",
-        "Accept-Language": "fr",
-        "cache-control": "no-cache"
-      }
-    }
-  );
-};
+import TripsList from "./trips-list";
 
 const MainView = () => {
   const [state, setState] = useState({
     fromCity: "Paris",
-    toCity: "Marseille"
+    toCity: "Marseille",
+    trips: []
   });
+
+  const fetchTrips = async (fromCity, toCity) => {
+    const { data } = await axios.get(
+      `https://edge.blablacar.com/api/v2/trips?_format=json&locale=fr_FR&cur=EUR&fn=${fromCity}&tn=${toCity}`,
+      {
+        headers: {
+          Accept: "application/json",
+          "Accept-Language": "fr",
+          "cache-control": "no-cache"
+        }
+      }
+    );
+
+    setState(prevState => ({ ...prevState, trips: data.trips }));
+  };
 
   const handleFromCityChange = fromCity => {
     setState(prevState => ({ ...prevState, fromCity }));
@@ -40,6 +44,7 @@ const MainView = () => {
         handleFromCityChange={handleFromCityChange}
         handleToCityChange={handleToCityChange}
       />
+      <TripsList trips={state.trips} />
     </div>
   );
 };
