@@ -1,20 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { authenticate } from "./authentication";
 import MainView from "./main-view";
 
 const App = () => {
-  useEffect(() => {
-    const setupAuthentication = async () => {
-      await authenticate();
-    };
+  const [authenticationError, setAuthenticationError] = useState(false);
 
+  const setupAuthentication = async () => {
+    try {
+      await authenticate();
+    } catch (error) {
+      setAuthenticationError(true);
+    }
+  };
+
+  useEffect(() => {
     setupAuthentication();
   }, []);
 
   return (
     <div className="app">
-      <MainView />
+      <MainView authenticationError={authenticationError} />
     </div>
   );
 };

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 import SearchForm from "./search-form";
 import TripsList from "./trips-list";
+import AuthenticationErrorAlert from "./authentication-error-alert";
 
-const MainView = () => {
+const MainView = ({ authenticationError }) => {
   const [fromCity, setFromCity] = useState("Paris");
   const [toCity, setToCity] = useState("Marseille");
   const [trips, setTrips] = useState([]);
@@ -36,13 +37,19 @@ const MainView = () => {
 
   return (
     <div className="container">
-      <SearchForm
-        fromCity={fromCity}
-        toCity={toCity}
-        handleFromCityChange={handleFromCityChange}
-        handleToCityChange={handleToCityChange}
-      />
-      <TripsList trips={trips} />
+      {authenticationError ? (
+        <AuthenticationErrorAlert />
+      ) : (
+        <>
+          <SearchForm
+            fromCity={fromCity}
+            toCity={toCity}
+            handleFromCityChange={handleFromCityChange}
+            handleToCityChange={handleToCityChange}
+          />
+          <TripsList trips={trips} />
+        </>
+      )}
     </div>
   );
 };

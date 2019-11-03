@@ -17,26 +17,35 @@ const getToken = async () =>
   );
 
 const setUpRequestInterceptor = async () => {
-  const { data } = await getToken();
+  try {
+    const { data } = await getToken();
 
-  axios.interceptors.request.use(config => {
-    config.headers.Authorization = `Bearer ${data.access_token}`;
-    return config;
-  });
+    axios.interceptors.request.use(config => {
+      config.headers.Authorization = `Bearer ${data.access_token}`;
+      return config;
+    });
+  } catch (error) {
+    console.error(error);
+    return Promise.reject(error);
+  }
 };
 
-export const authenticate = () => {
-  setUpRequestInterceptor();
+export const authenticate = async () => {
+  try {
+    await setUpRequestInterceptor();
 
-  axios.interceptors.response.use(
-    response => response,
-    error => {
-      if (error.response && error.response.status === 401) {
-        setUpRequestInterceptor();
-        return;
+    axios.interceptors.response.use(
+      response => response,
+      async error => {
+        if (error.response && error.response.status === 401) {
+          await setUpRequestInterceptor();
+          return;
+        }
+
+        return Promise.reject(error);
       }
-
-      return Promise.reject(error);
-    }
-  );
+    );
+  } catch (error) {
+    throw error;
+  }
 };
