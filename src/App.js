@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { authenticate } from "./authentication";
-import SearchForm from "./search-form";
+import MainView from "./main-view";
 
 const App = () => {
   const [authentication, setAuthentication] = useState({});
@@ -17,9 +17,7 @@ const App = () => {
 
   return (
     <div className="app">
-      <div className="container">
-        <SearchForm />
-      </div>
+      <MainView />
     </div>
   );
 };
