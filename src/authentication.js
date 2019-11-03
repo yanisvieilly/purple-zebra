@@ -18,6 +18,7 @@ export const authenticate = async () => {
 
   axios.interceptors.request.use(config => {
     config.headers.Authorization = `Bearer ${data.access_token}`;
+    return config;
   });
 
   return data;
