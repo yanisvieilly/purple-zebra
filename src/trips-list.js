@@ -9,7 +9,11 @@ const TripsList = ({ trips }) => {
       <td>{trip.arrival_place.city_name}</td>
       <td>{trip.user.display_name}</td>
       <td>
-        <img class="user-picture" src={trip.user.picture} />
+        <img
+          className="user-picture"
+          src={trip.user.picture}
+          alt="Driver picture"
+        />
       </td>
       <td>{trip.price.string_value}</td>
     </tr>
