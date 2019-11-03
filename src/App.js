@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { authenticate } from "./authentication";
+import SearchForm from "./search-form";
 
 const App = () => {
   const [authentication, setAuthentication] = useState({});
@@ -14,7 +15,13 @@ const App = () => {
     setupAuthentication();
   }, []);
 
-  return <div className="app"></div>;
+  return (
+    <div className="app">
+      <div className="container">
+        <SearchForm />
+      </div>
+    </div>
+  );
 };
 
 export default App;
