@@ -1,13 +1,13 @@
 import React, { memo } from "react";
 
-const AuthenticationErrorAlert = memo(() => (
+const TripsListLoadingErrorAlert = memo(() => (
   <div className="row mt-3">
     <div className="col">
       <div className="alert alert-danger" role="alert">
-        Could not authenticate to BlaBlaCar API.
+        Could not load the results.
       </div>
     </div>
   </div>
 ));
 
-export default AuthenticationErrorAlert;
+export default TripsListLoadingErrorAlert;

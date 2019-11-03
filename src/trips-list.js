@@ -20,7 +20,7 @@ const TripsList = ({ trips }) => {
   ));
 
   return (
-    <div className="row">
+    <div className="row mt-3">
       <div className="col">
         <table className="table table-striped table-hover">
           <thead>
