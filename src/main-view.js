@@ -1,19 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 import SearchForm from "./search-form";
 import TripsList from "./trips-list";
 
 const MainView = () => {
-  const [state, setState] = useState({
-    fromCity: "Paris",
-    toCity: "Marseille",
-    trips: []
-  });
+  const [fromCity, setFromCity] = useState("Paris");
+  const [toCity, setToCity] = useState("Marseille");
+  const [trips, setTrips] = useState([]);
 
-  const fetchTrips = async (fromCity, toCity) => {
+  const fetchTrips = async (from, to) => {
     const { data } = await axios.get(
-      `https://edge.blablacar.com/api/v2/trips?_format=json&locale=fr_FR&cur=EUR&fn=${fromCity}&tn=${toCity}`,
+      `https://edge.blablacar.com/api/v2/trips?_format=json&locale=fr_FR&cur=EUR&fn=${from}&tn=${to}`,
       {
         headers: {
           Accept: "application/json",
@@ -23,28 +21,28 @@ const MainView = () => {
       }
     );
 
-    setState(prevState => ({ ...prevState, trips: data.trips }));
+    setTrips(data.trips);
   };
 
-  const handleFromCityChange = fromCity => {
-    setState(prevState => ({ ...prevState, fromCity }));
-    fetchTrips(state.fromCity, state.toCity);
+  const handleFromCityChange = city => {
+    setFromCity(city);
+    fetchTrips(city, toCity);
   };
 
-  const handleToCityChange = toCity => {
-    setState(prevState => ({ ...prevState, toCity }));
-    fetchTrips(state.fromCity, state.toCity);
+  const handleToCityChange = city => {
+    setToCity(city);
+    fetchTrips(fromCity, city);
   };
 
   return (
     <div className="container">
       <SearchForm
-        fromCity={state.fromCity}
-        toCity={state.toCity}
+        fromCity={fromCity}
+        toCity={toCity}
         handleFromCityChange={handleFromCityChange}
         handleToCityChange={handleToCityChange}
       />
-      <TripsList trips={state.trips} />
+      <TripsList trips={trips} />
     </div>
   );
 };
