@@ -20,6 +20,8 @@ const setUpRequestInterceptor = async () => {
   try {
     const { data } = await getToken();
 
+    // We add an axios interceptor to every request, in order to pass the
+    // authentication token via the request headers.
     axios.interceptors.request.use(config => {
       config.headers.Authorization = `Bearer ${data.access_token}`;
       return config;
@@ -37,6 +39,8 @@ export const authenticate = async () => {
     axios.interceptors.response.use(
       response => response,
       async error => {
+        // If the API responds with a 401, the token must have expired. So we
+        // fetch a new token.
         if (error.response && error.response.status === 401) {
           await setUpRequestInterceptor();
           return;
