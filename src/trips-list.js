@@ -1,4 +1,5 @@
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
+import PropTypes from "prop-types";
 
 import "./trips-list.css";
 
@@ -38,5 +39,13 @@ const TripsList = memo(({ trips }) => {
     </div>
   );
 });
+
+TripsList.propTypes = {
+  trips: PropTypes.arrayOf(PropTypes.object)
+};
+
+TripsList.defaultProps = {
+  trips: []
+};
 
 export default TripsList;
