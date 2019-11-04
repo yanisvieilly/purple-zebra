@@ -6,15 +6,19 @@ import SearchForm from "./search-form";
 import TripsList from "./trips-list";
 import AuthenticationErrorAlert from "./authentication-error-alert";
 import TripsListLoadingErrorAlert from "./trips-list-loading-error-alert";
+import LoadingIcon from "./loading-icon";
 
 const MainView = ({ authenticationError }) => {
   const [fromCity, setFromCity] = useState("Paris");
   const [toCity, setToCity] = useState("Marseille");
   const [trips, setTrips] = useState([]);
+  const [isLoadingTrips, setIsLoadingTrips] = useState(false);
   const [fetchTripsError, setFetchTripsError] = useState(false);
 
   const fetchTrips = async (from, to) => {
     try {
+      setIsLoadingTrips(true);
+
       const { data } = await axios.get(
         `https://edge.blablacar.com/api/v2/trips?_format=json&locale=fr_FR&cur=EUR&fn=${from}&tn=${to}`,
         {
@@ -30,6 +34,8 @@ const MainView = ({ authenticationError }) => {
     } catch (error) {
       console.error(error);
       setFetchTripsError(true);
+    } finally {
+      setIsLoadingTrips(false);
     }
   };
 
@@ -55,7 +61,9 @@ const MainView = ({ authenticationError }) => {
             handleFromCityChange={handleFromCityChange}
             handleToCityChange={handleToCityChange}
           />
-          {fetchTripsError ? (
+          {isLoadingTrips ? (
+            <LoadingIcon />
+          ) : fetchTripsError ? (
             <TripsListLoadingErrorAlert />
           ) : (
             <TripsList trips={trips} />
