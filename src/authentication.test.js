@@ -12,35 +12,35 @@ describe("Authentication test suite", () => {
     moxios.uninstall();
   });
 
-  it("sets up a request interceptor", done => {
-    authenticate();
+  describe("when the request to /token is unsuccessful", () => {
+    const tokenErrorResponse = {
+      status: 500,
+      response: { message: "Internal server error" }
+    };
 
-    moxios.wait(async () => {
-      const request = moxios.requests.mostRecent();
-
-      await request.respondWith({
-        status: 200,
-        response: successResponse
+    it("throws an error", done => {
+      authenticate().catch(error => {
+        expect(error).toEqual({
+          status: tokenErrorResponse.status,
+          response: {
+            message: tokenErrorResponse.response.message,
+            data: undefined
+          }
+        });
       });
 
-      const successfulRequestInterceptor =
-        axios.interceptors.request.handlers[0].fulfilled;
+      moxios.wait(async () => {
+        const request = moxios.requests.mostRecent();
 
-      expect(successfulRequestInterceptor).toBeDefined();
+        await request.reject(tokenErrorResponse);
 
-      const config = { headers: {} };
-      const modifiedConfig = {
-        headers: { Authorization: `Bearer ${successResponse.access_token}` }
-      };
-
-      expect(successfulRequestInterceptor(config)).toEqual(modifiedConfig);
-
-      done();
+        done();
+      });
     });
   });
 
-  describe("response interceptor", () => {
-    it("sets up a response interceptor that rejects a promise when status code is not 401", done => {
+  describe("when the request to /token is successful", () => {
+    it("sets up a request interceptor", done => {
       authenticate();
 
       moxios.wait(async () => {
@@ -51,46 +51,75 @@ describe("Authentication test suite", () => {
           response: successResponse
         });
 
-        const failedResponseInterceptor =
-          axios.interceptors.response.handlers[0].rejected;
+        const successfulRequestInterceptor =
+          axios.interceptors.request.handlers[0].fulfilled;
 
-        expect(failedResponseInterceptor).toBeDefined();
+        expect(successfulRequestInterceptor).toBeDefined();
 
-        try {
-          await failedResponseInterceptor(errorResponse);
-        } catch (error) {
-          expect(error).toEqual(errorResponse);
-        }
+        const config = { headers: {} };
+        const modifiedConfig = {
+          headers: { Authorization: `Bearer ${successResponse.access_token}` }
+        };
+
+        expect(successfulRequestInterceptor(config)).toEqual(modifiedConfig);
 
         done();
       });
     });
 
-    it("sets up a response interceptor that refreshes the token when the status code is 401", done => {
-      authenticate();
-
-      moxios.wait(async () => {
-        const request = moxios.requests.mostRecent();
-
-        await request.respondWith({
-          status: 200,
-          response: successResponse
-        });
-
-        const failedResponseInterceptor =
-          axios.interceptors.response.handlers[0].rejected;
-
-        expect(failedResponseInterceptor).toBeDefined();
-
-        failedResponseInterceptor(mustRefreshTokenResponse);
+    describe("response interceptor", () => {
+      it("sets up a response interceptor that rejects a promise when status code is not 401", done => {
+        authenticate();
 
         moxios.wait(async () => {
-          expect(moxios.requests.count()).toEqual(2);
-
           const request = moxios.requests.mostRecent();
-          expect(request.url).toEqual("https://edge.blablacar.com/token");
+
+          await request.respondWith({
+            status: 200,
+            response: successResponse
+          });
+
+          const failedResponseInterceptor =
+            axios.interceptors.response.handlers[0].rejected;
+
+          expect(failedResponseInterceptor).toBeDefined();
+
+          try {
+            await failedResponseInterceptor(errorResponse);
+          } catch (error) {
+            expect(error).toEqual(errorResponse);
+          }
 
           done();
+        });
+      });
+
+      it("sets up a response interceptor that refreshes the token when the status code is 401", done => {
+        authenticate();
+
+        moxios.wait(async () => {
+          const request = moxios.requests.mostRecent();
+
+          await request.respondWith({
+            status: 200,
+            response: successResponse
+          });
+
+          const failedResponseInterceptor =
+            axios.interceptors.response.handlers[0].rejected;
+
+          expect(failedResponseInterceptor).toBeDefined();
+
+          failedResponseInterceptor(mustRefreshTokenResponse);
+
+          moxios.wait(async () => {
+            expect(moxios.requests.count()).toEqual(2);
+
+            const request = moxios.requests.mostRecent();
+            expect(request.url).toEqual("https://edge.blablacar.com/token");
+
+            done();
+          });
         });
       });
     });
