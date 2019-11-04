@@ -4,21 +4,25 @@ import PropTypes from "prop-types";
 import "./trips-list.css";
 
 const TripsList = memo(({ trips }) => {
-  const formatRows = (trips || []).map(trip => (
-    <tr key={trip.permanent_id}>
-      <td>{trip.departure_place.city_name}</td>
-      <td>{trip.arrival_place.city_name}</td>
-      <td>{trip.user.display_name}</td>
-      <td>
-        <img
-          className="user-picture"
-          src={trip.user.picture}
-          alt="Driver"
-        />
-      </td>
-      <td>{trip.price.string_value}</td>
-    </tr>
-  ));
+  const formatRows = useMemo(
+    () =>
+      trips.map(trip => (
+        <tr key={trip.permanent_id}>
+          <td>{trip.departure_place.city_name}</td>
+          <td>{trip.arrival_place.city_name}</td>
+          <td>{trip.user.display_name}</td>
+          <td>
+            <img
+              className="user-picture"
+              src={trip.user.picture}
+              alt="Driver"
+            />
+          </td>
+          <td>{trip.price.string_value}</td>
+        </tr>
+      )),
+    [trips]
+  );
 
   return (
     <div className="row mt-3">
