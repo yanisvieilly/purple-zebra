@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 import CitySelector from "./city-selector";
 
@@ -33,5 +34,12 @@ const SearchForm = ({
     </div>
   </div>
 );
+
+SearchForm.propTypes = {
+  fromCity: PropTypes.string.isRequired,
+  toCity: PropTypes.string.isRequired,
+  handleFromCityChange: PropTypes.func.isRequired,
+  handleToCityChange: PropTypes.func.isRequired
+};
 
 export default SearchForm;
