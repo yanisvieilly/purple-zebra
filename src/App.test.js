@@ -30,8 +30,6 @@ describe("App test suite", () => {
       it("authenticates successfully", done => {
         const wrapper = mount(component);
 
-        console.log(wrapper.debug());
-
         moxios.wait(async () => {
           const request = moxios.requests.mostRecent();
 
@@ -45,8 +43,31 @@ describe("App test suite", () => {
           wrapper.update();
 
           const mainView = wrapper.find(MainView);
-
           expect(mainView.prop("authenticationError")).toBeFalsy();
+
+          done();
+        });
+      });
+    });
+
+    describe("when the request to /token is unsuccessful", () => {
+      it("doesn't authenticate", done => {
+        const wrapper = mount(component);
+
+        moxios.wait(async () => {
+          const request = moxios.requests.mostRecent();
+
+          await act(async () =>
+            request.respondWith({
+              status: 500,
+              response: { message: "Internal server error" }
+            })
+          );
+
+          wrapper.update();
+
+          const mainView = wrapper.find(MainView);
+          expect(mainView.prop("authenticationError")).toBeTruthy();
 
           done();
         });
