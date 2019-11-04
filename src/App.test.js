@@ -1,9 +1,60 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
+import React from "react";
+import { act } from "react-dom/test-utils";
+import { shallow, mount } from "enzyme";
+import moxios from "moxios";
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
-  ReactDOM.unmountComponentAtNode(div);
+import App from "./App";
+import MainView from "./main-view";
+
+describe("App test suite", () => {
+  let component;
+
+  beforeEach(() => {
+    component = <App />;
+  });
+
+  it("renders without crashing", () => {
+    shallow(component);
+  });
+
+  describe("authentication", () => {
+    beforeEach(() => {
+      moxios.install();
+    });
+
+    afterEach(() => {
+      moxios.uninstall();
+    });
+
+    describe("when the request to /token is successful", () => {
+      it("authenticates successfully", done => {
+        const wrapper = mount(component);
+
+        console.log(wrapper.debug());
+
+        moxios.wait(async () => {
+          const request = moxios.requests.mostRecent();
+
+          await act(async () =>
+            request.respondWith({
+              status: 200,
+              response: successResponse
+            })
+          );
+
+          wrapper.update();
+
+          const mainView = wrapper.find(MainView);
+
+          expect(mainView.prop("authenticationError")).toBeFalsy();
+
+          done();
+        });
+      });
+    });
+  });
 });
+
+const successResponse = {
+  access_token: "0123456789"
+};
