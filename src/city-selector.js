@@ -1,6 +1,6 @@
 import React from "react";
 
-const CITIES = ["Paris", "Rennes", "Lyon", "Marseille", "Bordeaux", "Lille"];
+import { CITIES } from "./constants";
 
 const CitySelector = ({ id, label, value, handleCityChange }) => {
   const formatOptions = () =>
